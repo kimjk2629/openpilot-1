@@ -46,15 +46,15 @@ DriveStats::DriveStats(QWidget* parent) : QWidget(parent) {
   QString distance_unit = metric ? "㎞" : "MILES";
 
   auto add_stats_layouts = [&](QGridLayout* gl, StatsLabels& labels, int row, const QString &distance_unit) {
-    gl->addLayout(build_stat_layout(&labels.routes, "주행수"), row, 0, 3, 1);
-    gl->addLayout(build_stat_layout(&labels.hours, "시간"), row, 1, 3, 1);
+    gl->addLayout(build_stat_layout(&labels.routes, "DRIVES"), row, 0, 3, 1);
+    gl->addLayout(build_stat_layout(&labels.hours, "HOURS"), row, 1, 3, 1);
     gl->addLayout(build_stat_layout(&labels.distance, distance_unit), row, 2, 3, 1);
   };
 
   QGridLayout* gl = new QGridLayout(this);
   gl->setMargin(0);
 
-  gl->addWidget(new QLabel("     〔  누적 주행기록  〕 \U00002728"), 0, 0, 1, 3);
+  gl->addWidget(new QLabel("     〔  Total Drive Stats  〕 \U00002728"), 0, 0, 1, 3);
   add_stats_layouts(gl, all_, 1, distance_unit);
   gl->addWidget(new QLabel("「 openpilot by crwusiz branch 」"), 7, 0, 1, 3);
 

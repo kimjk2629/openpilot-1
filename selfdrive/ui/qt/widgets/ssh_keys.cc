@@ -6,8 +6,7 @@
 #include "selfdrive/common/params.h"
 #include "selfdrive/ui/qt/api.h"
 #include "selfdrive/ui/qt/widgets/input.h"
-
-SshControl::SshControl() : AbstractControl("SSH키", "Github 사용자 ID에 등록된 SSH키로 변경합니다.", "../assets/offroad/icon_ssh.png") {
+SshControl::SshControl() : AbstractControl("SSH Keys", "Warning: This grants SSH access to all public keys in your GitHub settings. Never enter a GitHub username other than your own. A comma employee will NEVER ask you to add their GitHub username.", "../assets/offroad/icon_ssh.png") {
 
   // setup widget
   hlayout->addStretch(1);
@@ -28,10 +27,10 @@ SshControl::SshControl() : AbstractControl("SSH키", "Github 사용자 ID에 등
   hlayout->addWidget(&btn);
 
   QObject::connect(&btn, &QPushButton::released, [=]() {
-    if (btn.text() == "개인키사용") {
+    if (btn.text() == "ADD") {
       QString username = InputDialog::getText("GitHub ID를 입력하세요");
       if (username.length() > 0) {
-        btn.setText("로딩중");
+        btn.setText("LOADING");
         btn.setEnabled(false);
         getUserKeys(username);
       }
@@ -50,13 +49,13 @@ void SshControl::refresh() {
   std::string paramc = Params().get("GithubUsername");
   if (param.length() && !paramc.empty()) {
     username_label.setText(QString::fromStdString(params.get("GithubUsername")));
-    btn.setText("개인키제거");
+    btn.setText("REMOVE");
   } else if (param.length() && paramc.empty()) {
     username_label.setText("Public Key");
-    btn.setText("공개키제거");
+    btn.setText("REMOVE");
   } else {
     username_label.setText("");
-    btn.setText("개인키사용");
+    btn.setText("ADD");
   }
   btn.setEnabled(true);
 }
@@ -69,25 +68,25 @@ void SshControl::getUserKeys(const QString &username) {
       params.put("GithubUsername", username.toStdString());
       params.put("GithubSshKeys", resp.toStdString());
     } else {
-      ConfirmationDialog::alert(username + "등록된 SSH키가 없습니다.");
+      ConfirmationDialog::alert("Username '" + username + "' has no keys on GitHub");
     }
     refresh();
     request->deleteLater();
   });
   QObject::connect(request, &HttpRequest::failedResponse, [=] {
-    ConfirmationDialog::alert(username + "등록된 사용자가 아닙니다.");
+    ConfirmationDialog::alert("Username '" + username + "' doesn't exist on GitHub");
     refresh();
     request->deleteLater();
   });
   QObject::connect(request, &HttpRequest::timeoutResponse, [=] {
-    ConfirmationDialog::alert("요청시간이 초과되었습니다.");
+    ConfirmationDialog::alert("Request timed out");
     refresh();
     request->deleteLater();
   });
 }
 
 //LateralControlSelect
-LateralControlSelect::LateralControlSelect() : AbstractControl("LateralControl [√]", "조향로직을 선택합니다. (PID/INDI/LQR)", "../assets/offroad/icon_logic.png") {
+LateralControlSelect::LateralControlSelect() : AbstractControl("LateralControl [√]", "LateralControlSelect. (PID/INDI/LQR)", "../assets/offroad/icon_logic.png") {
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
   hlayout->addWidget(&label);
@@ -160,7 +159,7 @@ void LateralControlSelect::refresh() {
 }
 
 //MfcSelect
-MfcSelect::MfcSelect() : AbstractControl("MFC [√]", "MFC를 선택합니다. (LKAS/LDWS/LFA)", "../assets/offroad/icon_mfc.png") {
+MfcSelect::MfcSelect() : AbstractControl("MFC [√]", "MfcSelect. (LKAS/LDWS/LFA)", "../assets/offroad/icon_mfc.png") {
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
   hlayout->addWidget(&label);
@@ -229,7 +228,7 @@ void MfcSelect::refresh() {
 }
 
 //LongControlSelect
-LongControlSelect::LongControlSelect() : AbstractControl("LongControl [√]", "LongControl 모드를 선택합니다. (MAD/LONG)", "../assets/offroad/icon_long.png") {
+LongControlSelect::LongControlSelect() : AbstractControl("LongControl [√]", "LongControlSelect. (MAD/LONG)", "../assets/offroad/icon_long.png") {
   label.setAlignment(Qt::AlignVCenter|Qt::AlignRight);
   label.setStyleSheet("color: #e0e879");
   hlayout->addWidget(&label);
